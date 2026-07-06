@@ -1,0 +1,23 @@
+# Easy Level 1: Simple linear path
+nb_drones: 2
+
+start_hub: start 0 0 [color=green]
+hub: waypoint1 2 2 [color=red max_drones=1]
+hub: waypoint2 2 -2 [color=green max_drones=1]
+hub: waypoint3 3 0 [color=green max_drones=1 zone=restricted]
+end_hub: goal 4 0 [color=red]
+
+
+connection: start-waypoint1
+connection: waypoint1-waypoint3
+connection: start-waypoint2
+connection: waypoint2-waypoint3 
+connection: waypoint3-goal
+
+# self connection
+
+# [] in name of hub ?? i have a arrgu
+# nb_drones supported by machine
+# metadata in hub [color , max_drones , zone]
+# metadata in connection [max_link_capacity]
+
