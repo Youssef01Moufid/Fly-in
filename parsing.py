@@ -90,6 +90,12 @@ class Parser:
             open_bracket = line.index("[")
             close_bracket = line.index("]")
 
+            if open_bracket > 0 and not line[open_bracket - 1].isspace():
+                raise SystemExit(
+                    f"Error line {line_number}: "
+                    "Expected a space before '['"
+                )
+
             if close_bracket < open_bracket:
                 raise SystemExit(
                     f"Error line {line_number}: "

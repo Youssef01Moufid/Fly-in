@@ -1,6 +1,6 @@
 from graph import Graph
 import heapq
-from zone import ZoneType
+from zone import ZoneType, Zone
 from typing import TypeAlias
 
 
@@ -66,8 +66,10 @@ class Pathfinding:
                 max_l_c = self.link_capacity_cache.get(link, 0)
                 self.link_capacity_cache[link] = max_l_c + 1
                 zone_t = self.graph.get_zone(zone_name)
+
                 if zone_t is None:
                     raise ValueError(f"Unknown zone: {zone_name}")
+
                 if (zone_t.zone_type == ZoneType.RESTRICTED):
                     cost += 1
                     link = (last_zone, zone_name, cost)
@@ -75,6 +77,42 @@ class Pathfinding:
                     self.link_capacity_cache[link] = max_l_c + 1
 
             last_zone = zone_name
+
+    def can_move(
+        self,
+        current: Zone,
+        neighbor: Zone,
+        current_turn: int,
+    ) -> bool:
+
+        duration, _ = neighbor.get_cost()
+
+        connection = self.graph.get_connection(current, neighbor)
+
+        if connection is None:
+            return False
+
+        for t in range(1, duration + 1):
+
+            used = self.link_capacity_cache.get(
+                (current.name, neighbor.name, current_turn + t),
+                0
+            )
+
+            if used >= connection.max_link_capacity:
+                return False
+
+        arrival = current_turn + duration
+
+        used = self.max_drones_cache.get(
+            (neighbor.name, arrival),
+            0
+        )
+
+        if used >= neighbor.max_drones:
+            return False
+
+        return True
 
     def get_path(self) -> list[str]:
         """
@@ -96,8 +134,8 @@ class Pathfinding:
             raise ValueError(f"Unkown start zone: {start_zone}")
         heapq.heappush(heap, (0, 0, start_zone.name, [start_zone.name]))
         visited = []
-        res_drone = 0
-        res_link = 0
+        # res_drone = 0
+        # res_link = 0
 
         while heap:
             cost, p, name, path = heapq.heappop(heap)
@@ -128,23 +166,21 @@ class Pathfinding:
                 c = cost + n_cost
                 p1 = p + n_p
 
-                zone_reserve = self.max_drones_cache.get(
-                    (neighbor.name, c), res_drone
-                )
+                # zone_reserve = self.max_drones_cache.get(
+                #     (neighbor.name, c), res_drone
+                # )
 
-                link_reserve = self.link_capacity_cache.get(
-                    (name, neighbor.name, c), res_link
-                )
+                # link_reserve = self.link_capacity_cache.get(
+                #     (name, neighbor.name, c), res_link
+                # )
 
                 connection = self.graph.get_connection(zone, neighbor)
                 if connection is None:
                     raise ValueError(f"Unkown connection: {connection}")
 
-                if (
-                        zone_reserve >= neighbor.max_drones or
-                        link_reserve >= connection.max_link_capacity):
+                if not self.can_move(zone, neighbor, cost):
 
-                    heapq.heappush(heap, (cost+1, p, name, path + ['WAIT']))
+                    heapq.heappush(heap, (cost + 1, p, name, path + ['WAIT']))
                     continue
 
                 heapq.heappush(

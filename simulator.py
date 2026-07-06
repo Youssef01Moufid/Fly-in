@@ -111,7 +111,8 @@ class Simulator:
                         0,
                     )
                     print(
-                        f"Connection {connection.zone_a.name}-{connection.zone_b.name}: "
+                        "Connection"
+                        f"{connection.zone_a.name}-{connection.zone_b.name}: "
                         f"{current}/{connection.max_link_capacity} used"
                     )
             index += 1

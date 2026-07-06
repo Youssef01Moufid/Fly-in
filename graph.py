@@ -82,7 +82,7 @@ class Graph:
             The connection linking the two zones if it exists,
             otherwise None.
         """
-        for con in self.connections:WAIT
+        for con in self.connections:
             if con.involves(zone_a) and con.involves(zone_b):
                 return con
         return None
