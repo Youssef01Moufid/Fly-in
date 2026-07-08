@@ -1,6 +1,6 @@
 from graph import Graph
 from zone import ZoneType
-import webcolors
+import webcolors  # type: ignore[import-untyped]
 from pathfinding import Pathfinding
 
 
@@ -14,12 +14,10 @@ class Simulator:
         graph: Graph,
         paths: list[list[str]],
         path_fin: Pathfinding,
-        capacity_info: bool,
     ) -> None:
         self.graph = graph
         self.paths = paths
         self.path_fin = path_fin
-        self.capacity_info = capacity_info
 
     def _expand_path(self) -> list[list[str]]:
 
@@ -42,8 +40,8 @@ class Simulator:
 
         return paths_c
 
-    def get_expanded_paths(self) -> list[list[str]]:
-        return self._expand_path()
+    # def get_expanded_paths(self) -> list[list[str]]:
+    #     return self._expand_path()
 
     def color_text(self, text: str, color: str | None) -> str:
 
@@ -87,32 +85,5 @@ class Simulator:
                     pass
             if line == "":
                 break
-            print()
             print(f"Turn {index}: {line}")
-            if self.capacity_info:
-                for zone in self.graph.zones:
-                    current = self.path_fin.max_drones_cache.get(
-                        (zone.name, index),
-                        0
-                    )
-                    print(
-                        f"Zone {zone.name}: "
-                        f"{current}/{zone.max_drones} drones"
-                    )
-                print()
-                for connection in self.graph.connections:
-
-                    current = self.path_fin.link_capacity_cache.get(
-                        (
-                            connection.zone_a.name,
-                            connection.zone_b.name,
-                            index,
-                        ),
-                        0,
-                    )
-                    print(
-                        "Connection"
-                        f"{connection.zone_a.name}-{connection.zone_b.name}: "
-                        f"{current}/{connection.max_link_capacity} used"
-                    )
             index += 1

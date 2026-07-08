@@ -3,7 +3,7 @@ from connection import Connection
 from graph import Graph
 from typing import Optional
 from pathfinding import Pathfinding
-import webcolors
+import webcolors  # type: ignore[import-untyped]
 
 
 class Parser:

@@ -11,7 +11,7 @@ install:
 	$(PIP) install --break-system-packages -r requirements.txt
 
 run:
-	$(PYTHON) $(MAIN) $(MAP)
+	$(PYTHON) $(MAIN) $(CAP_INFO) $(MAP)
 
 debug:
 	$(PYTHON) -m pdb $(MAIN)

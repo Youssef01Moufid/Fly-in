@@ -114,6 +114,21 @@ class Pathfinding:
 
         return True
 
+    # def propagate_goal_occupancy(self) -> None:
+
+    #     goal = self.graph.end_zone
+    #     if goal is None:
+    #         return
+
+    #     last_turn = max(
+    #         turn for (_, turn) in self.max_drones_cache.keys()
+    #     )
+
+    #     current = 0
+    #     for turn in range(last_turn + 1):
+    #         current += self.max_drones_cache.get((goal.name, turn), 0)
+    #         self.max_drones_cache[(goal.name, turn)] = current
+
     def get_path(self) -> list[str]:
         """
         Compute the best available path for a drone.
