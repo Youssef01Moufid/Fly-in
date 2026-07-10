@@ -1,33 +1,33 @@
-PYTHON := python3
-PIP := pip3
-MAIN := fly-in.py
-MAP := map.txt
-CAP_INFO := --capacity-info
-VENV := venv
+PYTHON = python3
+PIP = pip3
+
+MAIN = fly-in.py
+MAP = map.txt
+ARGS = 
 
 .PHONY: install run debug clean lint lint-strict
 
 install:
-	$(PIP) install --break-system-packages -r requirements.txt
+	$(PIP) install -r requirements.txt
 
 run:
-	$(PYTHON) $(MAIN) $(CAP_INFO) $(MAP)
+	$(PYTHON) $(MAIN) $(ARGS) $(MAP)
 
 debug:
-	$(PYTHON) -m pdb $(MAIN)
+	$(PYTHON) -m pdb $(MAIN) $(ARGS) $(MAP)
 
 clean:
-	find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+	find . -type d -name "__pycache__" -exec rm -rf {} +
 	rm -rf .mypy_cache
 	rm -rf .pytest_cache
-	rm -rf $(VENV)
 
 lint:
 	flake8 .
-	mypy . --warn-return-any --warn-unused-ignores \
-		--ignore-missing-imports --disallow-untyped-defs \
+	mypy . \
+		--warn-return-any \
+		--warn-unused-ignores \
+		--disallow-untyped-defs \
 		--check-untyped-defs
 
 lint-strict:
-	flake8 .
 	mypy . --strict

@@ -14,10 +14,12 @@ class Simulator:
         graph: Graph,
         paths: list[list[str]],
         path_fin: Pathfinding,
+        capacity_info: bool = False
     ) -> None:
         self.graph = graph
         self.paths = paths
         self.path_fin = path_fin
+        self.capacity_info = capacity_info
 
     def _expand_path(self) -> list[list[str]]:
 
@@ -58,6 +60,45 @@ class Simulator:
         except ValueError:
             return text
 
+    def _print_capacity(self, turn: int) -> None:
+
+        for zone in self.graph.zones:
+
+            if zone == self.graph.end_zone:
+                current = 0
+                for (name, t), value in self.path_fin.max_drones_cache.items():
+                    if name == zone.name and t <= turn:
+                        current += value
+            else:
+                current = self.path_fin.max_drones_cache.get(
+                    (zone.name, turn),
+                    0
+                )
+
+            print(
+                f"Zone {zone.name}: "
+                f"{current}/{zone.max_drones} drones"
+            )
+        print()
+
+        for connection in self.graph.connections:
+            current = self.path_fin.link_capacity_cache.get(
+                (
+                    connection.zone_a.name,
+                    connection.zone_b.name,
+                    turn
+                ),
+                0
+            )
+
+            print(
+                f"Connection "
+                f"{connection.zone_a.name}-"
+                f"{connection.zone_b.name}: "
+                f"{current}/{connection.max_link_capacity} used"
+            )
+        print()
+
     def run(self) -> None:
 
         paths_c = self._expand_path()
@@ -86,4 +127,6 @@ class Simulator:
             if line == "":
                 break
             print(f"Turn {index}: {line}")
+            if self.capacity_info:
+                self._print_capacity(index)
             index += 1
